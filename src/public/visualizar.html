@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Academic Control</title>
+<script>
+window.onload = () => {
+    const page = location.search.split('=')[location.search.split('=').length - 1]
+    fetch(`http://10.0.0.120:3333/marcacao/${page}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+
+            let table = `
+                <tr>
+                    <th>Aluno</th>
+                    <th>Marcação</th>
+                </tr>
+            `;
+            data.data.map(item => {
+                table += `
+                    <tr>
+                        <td align="center">${item.NOME}</td>
+                        <td align="center">${item.MARCACAO}</td>
+                    </tr>
+                `
+            })
+            document.querySelector('table').innerHTML = table;
+
+        }).catch(erro => erro)
+}
+</script>
+</head>
+<body>
+    <p align="center"><a href="menu.html"><img src="https://i.imgur.com/nbHBJlE.jpg"/></a></p>
+    <br />
+    <br />
+    <br />
+    <table align="center" border=1>
+            
+    </table>
+    
+</body>
+</html>

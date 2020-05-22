@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Academic Control</title>
+<script>
+window.onload = () => {
+    fetch('http://10.0.0.120:3333/disciplinas')
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.data)
+            let table = "";
+            table += "<tr>";
+            data.data.map(item => {
+                table += `<td align="center" class='item'><a href="presenca.html?disciplina=${item.ID}"><img src="${item.IMG}"/><span>Frequencia</span></a>    <a href="historico.html?disciplina=${item.ID}"><span>Ver Histórico</span></a></td>`;
+            })
+            table += "</tr>";
+            document.querySelector('table').innerHTML = table;
+        })
+}
+</script>
+</head>
+<body>
+    <p align="center"><a href="menu.html"><img src="https://imgur.com/nbHBJlE.jpg" width=”100%” height=”100%”/></a></p>
+    <br />
+    <br />
+    <br />
+    <h1 align="center">Disciplinas Disponíveis</h1>
+    <br />
+    <hr width="50%">
+    <br />
+    <table align="center">
+        <tr>
+            <!-- <td align="center">
+                <a href="redes.html">
+                    <img src="https://imgur.com/xtzlm60.jpg"/>
+                    <span>Nome</span>
+                </a>
+            </td>
+            <td align="center"><a href="fundamentos.html"><img src="https://imgur.com/I8JuUZg.jpg"/></a></td>
+            <td align="center"><a href="poo.html"><img src="https://imgur.com/FYnYDKj.jpg"/></a></td>
+            <td align="center"><a href="desenvolvimento.html"><img src="https://imgur.com/d7rAkuY.jpg"/></a></td> -->
+        </tr>
+        
+    </table>
+    <table align="center">
+        <td align="center"><a href="menu.html"><input type="button" value="VOLTAR"></a></td>
+    </table>
+</body>
+
+
+</html>

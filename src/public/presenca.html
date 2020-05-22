@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Academic Control</title>
+<script>
+let idDisciplina = 0;
+let idFrequencia = 0;
+window.onload = () => {
+
+    document.querySelector('#info-date').innerHTML = dataString;
+    const page = location.search.split('=')[location.search.split('=').length - 1]
+    idDisciplina = page;
+    
+    fetch(`http://10.0.0.120:3333/disciplina/${page}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.querySelector('h2').innerHTML = data.data[0].TITULO    
+
+                fetch('http://10.0.0.120:3333/alunos')
+                    .then(res => res.json())
+                    .then(dataAlunos => {
+
+                        if(dataAlunos.success) {
+                            
+                            let table = `
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>Marcação de Presença</th>
+                                    <th>Marcação de Ausência</th>
+                                </tr>
+                            `;
+                            dataAlunos.data.map(item => {
+                                table += `
+                                <tr>
+                                    <td>${item.NOME}</td>
+                                    <td class='presente'><input onClick="marcacao(${item.ID}, 'Presente')" type="radio" id="presente" name="${item.NOME}" value="presente">PRESENTE</td>
+                                    <td class='ausente'><input onClick="marcacao(${item.ID}, 'Ausente')" type="radio" id="ausente" name="${item.NOME}" value="ausente">AUSENTE</td>
+                                </tr>
+                                `
+                            });
+                            document.querySelector('table').innerHTML = table;
+                        }
+                    })
+            }
+        })
+}
+
+
+const formatNumberData = valor => valor < 10 ? '0'+valor : valor;
+const data = new Date();
+const dataString = formatNumberData(data.getDate())+'/'+formatNumberData(data.getMonth() + 1)+'/'+data.getFullYear();
+
+let marcacoes = []
+function marcacao(id, valor) {
+    const len = marcacoes.filter(item => item[0] === id).length;
+    if(!len)
+        marcacoes.push([id, valor])
+    else
+        marcacoes.map(item => item[0] == id ? item[1] = valor : item[1] = item[1])
+    console.log(marcacoes)
+}
+
+function enviar() {
+    console.log(marcacoes)
+    const marcacoesStringfy = JSON.stringify(marcacoes)
+    // console.log(idDisciplina, dataString)
+
+    if(confirm('Tem certeza que deseja salvar?')) {
+        fetch('http://10.0.0.120:3333/frequencia',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                    },
+                method: "POST",
+                body: JSON.stringify({ id_disciplina: idDisciplina, data: dataString })
+            }
+        ).then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                idFrequencia = data.data
+                console.log(idFrequencia)
+
+                // Map das marcacoes
+                // marcacoes.map(async (item, key) => {
+                //     // console.log(item)
+                //     await fetch('http://10.0.0.120:3333/marcacao',
+                //         {
+                //             headers: {
+                //                 'Accept': 'application/json',
+                //                 'Content-Type': 'application/json'
+                //                 },
+                //             method: "POST",
+                //             body: JSON.stringify({ id_frequencia: data.data, id_aluno: item[0], marcacao: item[1] })
+                //         }
+                //     ).then(res => res.json())
+                //     .then(data => {
+                //         if(data.success) {
+                //             console.log('ok')
+                //             count++;
+                //         }
+                //     }).catch(erro => console.log(erro))
+                // });
+
+                const id_frequencia = data.data;
+                // const marcacoes = JSON.stringify(marcacoes)
+                console.log(id_frequencia, marcacoesStringfy)
+                fetch('http://10.0.0.120:3333/marcacao',
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                            },
+                        method: "POST",
+                        body: JSON.stringify({ id_frequencia, marcacoes: marcacoesStringfy })
+                    }
+                ).then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        console.log('ok')
+                        alert('Frequencia registrada!');
+                        window.location = 'disciplina.html';
+                    }
+                }).catch(erro => console.log(erro))
+                
+                // alert('Frequencia registrada!');
+                // window.location = 'disciplina.html';
+                // setTimeout(() => {
+                //     window.location = 'disciplina.html';
+                // }, (marcacoes.length * 500) + 5000);
+
+                // while(count !== marcacoes.length) {
+                //     setTimeout(() => {
+                //         console.log('verificando    ')
+                //     }, 500)
+                // }
+            }
+        }).catch(erro => console.log(erro))
+    }
+}
+</script>
+</head>
+<body>
+    <p align="center"><a href="menu.html"><img src="https://imgur.com/nbHBJlE.jpg" width=”100%” height=”100%”/></a></p>
+    <br />
+    <br />
+    <br />
+    <h1 align="center">Lista de Presença</h1>
+    <br />
+    <h2 align="center">Redes</h2>
+    <h5 align="center" id="info-date"></h5>
+    <hr width="50%">
+    <br />
+<form action="" method="POST">
+<table align="center" border=1>
+</table>
+
+</form>
+<table align="center">
+    <form>
+<tr>
+   
+    <td align="center"><a href="disciplina.html"><input type="button" value="VOLTAR"></a></td>
+    <td align="center"><input onClick="enviar()" type="button" value="SALVAR"></td>
+    <p id="demo"></p>
+</tr>
+ 
+<!-- <script>
+function funcao1()
+{
+var x;
+var r=confirm("Você tem certeza que deseja salvar?");
+if (r==true)
+  {
+  x="Chamada efetuada com sucesso!";
+  }
+else
+  {
+  x="Operação cancelada!";
+  }
+document.getElementById("demo").innerHTML=x;
+}
+</script> -->
+
+</form>
+</table>
+</body>
+
+
+</html>

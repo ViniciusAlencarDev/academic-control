@@ -7,7 +7,26 @@
 <script>
 function enviar() {
   if(confirm("Deseja prosseguir com o envio do codigo de acesso para seu e-mail?")) {
-    
+    const email = document.querySelector("input[name=email]").value;
+    fetch('http://localhost:3333/recuperarsenha',
+      {
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+              },
+          method: "POST",
+          body: JSON.stringify({ email })
+      }
+    ).then(res => res.json())
+      .then(data => {
+          if(data.success) {
+            alert("Link enviada com sucesso");
+            window.location = 'index.html';
+          }
+          else
+            alert('Erro ao realizar o envio!');
+      })
+      .catch(erro => console.log(erro))
   }
 }
 </script>
@@ -17,27 +36,16 @@ function enviar() {
     <br />
     <br />
     <br />
-
     <div align="center" method="post">
-
         <p>EMAIL: <input type="text" name="email" size="13" maxlength="20" placeholder="Digite seu Email."
                 autofocus></p>
-         <p>MATRÍCULA: <input type="text" name="matricula" size="13" maxlength="20" placeholder="Digite sua matrícula."></p>
-        <p>NOVA SENHA: <input type="password" name="senha" size="13" maxlength="6" placeholder="Digite a sua nova senha."></p>
-        <p>REPITA SUA SENHA: <input type="password" name="senha" size="13" maxlength="6" placeholder="Repita a sua nova senha."></p>
-       
         <table align="center">
             <tr>
 <td><a href="index.html"><input type="button" value="VOLTAR"></a></td>
 <td> <button onclick="enviar()">CONFIRMAR</button></td>
- 
 <p id="demo"></p>
- 
 </tr>
-        </table>
+    </table>
     </div>
-
 </body>
-
-
 </html>

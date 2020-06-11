@@ -7,7 +7,7 @@
 <script>
 window.onload = () => {
     const page = location.search.split('=')[location.search.split('=').length - 1]
-    fetch(`http://10.0.0.120:3333/frequencia/${page}`)
+    fetch(`http://localhost:3333/frequencia/${page}`)
         .then(res => res.json())
         .then(data => {
             console.log(data)
@@ -25,7 +25,6 @@ window.onload = () => {
                 `
             })
             document.querySelector('table').innerHTML = table;
-
         }).catch(erro => erro)
 }
 </script>
@@ -36,8 +35,6 @@ window.onload = () => {
     <br />
     <br />
     <table align="center" border=1 style="margin-bottom: 100px;">
-            
     </table>
-    
 </body>
 </html>

@@ -3,10 +3,12 @@ const app = express()
 const path = require('path')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+const cors = require('cors')
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.set(path.join(__dirname, 'public'))
 app.use(express.json())
+app.use(cors(['*']))
 
 const configServer = require('./config/configServer.json')
 const protocol = process.env.PROTOCOL || configServer.protocol;
@@ -49,19 +51,32 @@ app.get('/disciplinas', async (req, res) => {
     res.send(response)
 });
 
-app.get('/disciplina/:id', async (req, res) => {
-    const { id } = req.params;
+app.get('/disciplina/:id/:date', async (req, res) => {
+    const { id, date } = req.params;
+    const dateString = date.replace('-', '/').replace('-', '/')
+    
     let response = {
         success: false,
         data: []
     }
-    const data = await connection('disciplinas')
+
+    const prepare = await connection('frequencias')
         .select('*')
-        .where('id', id)
-    if(data.length) {
-        response.success = true;
-        response.data = data;
-    }
+        .where('DATA', dateString)
+        .where('ID_DISCIPLINA', id)
+    if(!prepare.length) {
+        const data = await connection('disciplinas')
+            .select('*')
+            .where('id', id)
+        if(data.length) {
+            response.success = true;
+            response.data = data;
+        }
+    } else
+        response.data = ["Frequencia de hoje já se encontra registrada!"]
+    
+    
+    
     res.send(response)
 });
 
@@ -182,16 +197,13 @@ app.get('/marcacao/:id_frequencia', async (req, res) => {
 // });
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.mail.yahoo.com',
-    port: 465,
-    service:'yahoo',
-    secure: true,
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
-        user: 'professorteste@yahoo.com',
-        pass: '123456sete'
+        user: '@gmail.com',
+        pass: ''
     },
-    debug: false,
-    logger: true
 });
 
 app.post('/recuperarsenha', async (req, res) => {
@@ -205,17 +217,21 @@ app.post('/recuperarsenha', async (req, res) => {
         .update(email)
         .digest('hex');
 
-    // console.log(codigo)
-    let link = "http://10.0.0.120:3333/verificarcodigo.html?codigo="+codigo;
+    let link = `${protocol}://${ip}:${port}/verificarcodigo.html?codigo=${codigo}`;
     console.log(link)
 
-    let info = await transporter.sendMail({
-        from: 'Academic Control',
-        to: email,
-        subject: 'Recuperação de senha',
-        html: '<h1>Olá</h1><h4>Caso não solicitou recuperação de senha favor desconsiderar</h4>',
-        text: `para recuperar sua senha <a href="${link}" target="_blank">clique aqui</a>`,
-    }).catch(erro => console.log(erro))
+    // await transporter.sendMail({
+    //     from: 'Academic Control',
+    //     to: email,
+    //     subject: 'Recuperação de senha',
+    //     html: `<h1>Olá</h1>
+    //         para recuperar sua senha <a href="${link}" target="_blank">clique aqui</a>
+    //         <h4>Caso não solicitou recuperação de senha favor desconsiderar</h4>`,
+    //     text: ``,
+    // }).then(res => {
+    //     response.success = true;
+    // }).catch(erro => console.log(erro))
+    response.success = true;
     
     res.send(response)
 })
@@ -227,6 +243,15 @@ app.post('/verificarcodigo', async (req, res) => {
         data: []
     }
 
+    const { email, senha } = req.body;
+    console.log(email)
+    
+
+    // const data = await connecion('professores')
+    //     .update('senha', senha)
+
+    res.send(response);
+
 });
 
 app.get('*', (req, res) => {
@@ -235,4 +260,4 @@ app.get('*', (req, res) => {
     `);
 })
 
-app.listen(port, () => console.log(`Servidor iniciado em ${protocol}://${ip}:${port}`))
+app.listen(port, () => console.log(`Servidor iniciado em http://localhost:${port} ou ${protocol}://${ip}:${port}`))

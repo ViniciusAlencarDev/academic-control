@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="style.css">
@@ -9,7 +8,7 @@
         function login() {
             const matricula = document.querySelector('input[type=text]').value;
             const senha = document.querySelector('input[type=password]').value;
-            fetch('http://10.0.0.120:3333/login',
+            fetch('http://localhost:3333/login',
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -28,23 +27,14 @@
              .catch(erro => console.log(erro))
         }
     </script>
-
 </head>
-
 <body>
     <p align="center"><a href="index.html"><img src="https://i.imgur.com/nbHBJlE.jpg"/></a></p>
-
     <form id="form-login" method="GET">
-
-        <p>MATRICULA: <input type="text" name="matricula" size="13" maxlength="8" placeholder="Digite sua matricula"
-                autofocus></p>
-
+        <p>MATRICULA: <input type="text" name="matricula" size="13" maxlength="8" placeholder="Digite sua matricula" autofocus></p>
         <p>SENHA: <input type="password" name="senha" size="13" maxlength="6" placeholder="Digite sua senha"></p>
-        
         <input type="button" value="ENTRAR" onclick="login()">
         <p><a href="senha.html">Esqueceu a sua senha?</a></p>
     </form>
-    
 </body>
-
 </html>

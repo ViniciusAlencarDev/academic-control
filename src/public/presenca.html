@@ -12,14 +12,17 @@ window.onload = () => {
     document.querySelector('#info-date').innerHTML = dataString;
     const page = location.search.split('=')[location.search.split('=').length - 1]
     idDisciplina = page;
+
+    let dataStringParam = dataString.replace('/', '-').replace('/', '-')
     
-    fetch(`http://10.0.0.120:3333/disciplina/${page}`)
+    console.log(`http://localhost:3333/disciplina/${page}/${dataStringParam}`)
+    fetch(`http://localhost:3333/disciplina/${page}/${dataStringParam}`)
         .then(res => res.json())
         .then(data => {
             if(data.success) {
                 document.querySelector('h2').innerHTML = data.data[0].TITULO    
 
-                fetch('http://10.0.0.120:3333/alunos')
+                fetch('http://localhost:3333/alunos')
                     .then(res => res.json())
                     .then(dataAlunos => {
 
@@ -44,7 +47,8 @@ window.onload = () => {
                             document.querySelector('table').innerHTML = table;
                         }
                     })
-            }
+            } else
+                document.querySelector('h2').innerHTML = dataString + ' - ' + data.data[0]
         })
 }
 
@@ -66,10 +70,9 @@ function marcacao(id, valor) {
 function enviar() {
     console.log(marcacoes)
     const marcacoesStringfy = JSON.stringify(marcacoes)
-    // console.log(idDisciplina, dataString)
 
     if(confirm('Tem certeza que deseja salvar?')) {
-        fetch('http://10.0.0.120:3333/frequencia',
+        fetch('http://localhost:3333/frequencia',
             {
                 headers: {
                     'Accept': 'application/json',
@@ -84,31 +87,10 @@ function enviar() {
                 idFrequencia = data.data
                 console.log(idFrequencia)
 
-                // Map das marcacoes
-                // marcacoes.map(async (item, key) => {
-                //     // console.log(item)
-                //     await fetch('http://10.0.0.120:3333/marcacao',
-                //         {
-                //             headers: {
-                //                 'Accept': 'application/json',
-                //                 'Content-Type': 'application/json'
-                //                 },
-                //             method: "POST",
-                //             body: JSON.stringify({ id_frequencia: data.data, id_aluno: item[0], marcacao: item[1] })
-                //         }
-                //     ).then(res => res.json())
-                //     .then(data => {
-                //         if(data.success) {
-                //             console.log('ok')
-                //             count++;
-                //         }
-                //     }).catch(erro => console.log(erro))
-                // });
-
                 const id_frequencia = data.data;
                 // const marcacoes = JSON.stringify(marcacoes)
                 console.log(id_frequencia, marcacoesStringfy)
-                fetch('http://10.0.0.120:3333/marcacao',
+                fetch('http://localhost:3333/marcacao',
                     {
                         headers: {
                             'Accept': 'application/json',

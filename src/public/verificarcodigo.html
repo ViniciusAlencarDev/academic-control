@@ -11,7 +11,7 @@ window.onload = () => {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const emailCripto = location.search.split('=')[location.search.split('=').length - 1]
+        const emailCripto = location.search.split('=')[location.search.split('=').length - 2]
         const senha = document.querySelector('#senha').value;
         const confirmarSenha = document.querySelector('#confirmarSenha').value;
 
@@ -27,6 +27,7 @@ window.onload = () => {
                 }
             ).then(res => res.json())
                 .then(data => {
+                    console.log(data)
                     if(data.success) {
                         alert("Sua senha foi redefinida!");
                         window.location = "/";
@@ -46,7 +47,7 @@ window.onload = () => {
     <center>
         <form method="POST">
             <input type="password" id="senha" placeholder="Senha"><br />
-            <input type="password" id="confirmarSenha"" placeholder="Confirmar Senha"><br />
+            <input type="password" id="confirmarSenha" placeholder="Confirmar Senha"><br />
             <input type="submit" value="Redefinir">
         </form>
     </center>
